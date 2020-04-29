@@ -29,6 +29,9 @@
 
 #include <Adafruit_TLC5947.h>
 
+#define TLC5947_MAX_SCLK 15000000 // 15MHz max SPI clock rate for cascaded boards
+SPISettings TLC5947SPISettings(TLC5947_MAX_SCLK, MSBFIRST, SPI_MODE0);
+
 /*!
  *    @brief  Instantiates a new TLC5947 class
  *    @param  n
@@ -49,6 +52,7 @@ Adafruit_TLC5947::Adafruit_TLC5947(uint16_t n, uint8_t c, uint8_t d,
 
   pwmbuffer = (uint16_t *)malloc(2 * 24 * n);
   memset(pwmbuffer, 0, 2 * 24 * n);
+  SPI.begin();
 }
 
 /*!
@@ -74,6 +78,29 @@ void Adafruit_TLC5947::write() {
 
   digitalWrite(_lat, HIGH);
   digitalWrite(_lat, LOW);
+}
+
+/*!
+ *    @brief  Writes PWM data to the all connected TLC5947 boards faster using hardware SPI
+ */
+void Adafruit_TLC5947::writeFaster() {
+  digitalWrite(_lat, LOW);
+  SPI.beginTransaction(TLC5947SPISettings);
+  // 24 channels per TLC5974
+  for (int16_t c = 24 * numdrivers - 1; c >= 0; c--) {
+	// Even channel number
+	if (c % 2) {
+		SPI.transfer((uint8_t)pwmbuffer[c]);
+	}
+	// Odd channel number
+	else {
+		SPI.transfer((uint8_t)(pwmbuffer[c] >> 4));
+		SPI.transfer((uint8_t)((pwmbuffer[c] << 4) | (pwmbuffer[c-1] >> 8)));
+	}
+  }
+  digitalWrite(_lat, HIGH);
+  digitalWrite(_lat, LOW);
+  SPI.endTransaction();
 }
 
 /*!
