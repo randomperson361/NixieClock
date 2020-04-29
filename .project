@@ -32,16 +32,6 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>Adafruit_TLC5947-master</name>
-			<type>2</type>
-			<locationURI>PROJECT_LOC/importedLibraries/Adafruit_TLC5947-master</locationURI>
-		</link>
-		<link>
-			<name>SparkFun_DS3234_RTC_Arduino_Library-master</name>
-			<type>2</type>
-			<locationURI>PROJECT_LOC/importedLibraries/SparkFun_DS3234_RTC_Arduino_Library-master</locationURI>
-		</link>
-		<link>
 			<name>core/core</name>
 			<type>2</type>
 			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/arduino/hardware/avr/1.8.2/cores/arduino</locationURI>
