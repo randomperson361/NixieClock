@@ -1,4 +1,5 @@
 #include "Arduino.h"
+#include <math.h>
 #include "Adafruit_TLC5947.h"
 #include "SparkFunDS3234RTC.h"
 
@@ -33,7 +34,7 @@ bool buttonStateAdj = 0;
 bool buttonStateUp = 0;
 bool buttonStateDown = 0;
 bool switchAlarmOn = 0;
-uint16_t knobBright = 0;
+int knobBright = 0;
 bool switchSetAlm = 0;
 bool switchSetTime = 0;
 
@@ -44,7 +45,7 @@ void readInputs()
 	buttonStateAdj = !digitalRead(PIN_ADJ_BUTTON);
 	buttonStateDown = !digitalRead(PIN_DOWN_BUTTON);
 	switchAlarmOn = !digitalRead(PIN_ALM_ON_OFF);
-	knobBright = 4095 - 4*analogRead(PIN_BRIGHT_KNOB);
+	knobBright = 4*(1023 - analogRead(PIN_BRIGHT_KNOB));
 	uint16_t slider = analogRead(PIN_SET_ALM_TIME);
 	switchSetAlm = 0;
 	switchSetTime = 0;
@@ -130,19 +131,21 @@ void loop()
 	loopCounter++;
 	loopCounter = loopCounter % 10;
 
+	blankAll();
+	delayMicroseconds(100); // blanking interval
+
 	readInputs();
 	//printInputs();
 
 	// RTC testing
 	static int8_t lastSecond = -1;
+
 	rtc.update();
 	if (rtc.second() != lastSecond) // If the second has changed
 	{
 		lastSecond = rtc.second(); // Update lastSecond value
 	}
 
-	blankAll();
-	delayMicroseconds(350); // blanking interval
 
 	// Setup digit value
 	switch (loopCounter)
@@ -172,20 +175,20 @@ void loop()
 	// Loop through tubes lighting one at a time
 	if (loopCounter <= 5)
 	{
-		pwm.setPWM(PWM_TUBE[loopCounter], knobBright);
+		pwm.setPWM(PWM_TUBE[loopCounter], (uint16_t)knobBright);
 	}
 	else
 	{
-		pwm.setPWM(PWM_DOT[loopCounter-6], knobBright);
+		pwm.setPWM(PWM_DOT[loopCounter-6], (uint16_t)knobBright);
 	}
 
 	// RGB pattern on LEDs for test
-	pwm.setLED(PWM_LED[0],49,0,0);
-	pwm.setLED(PWM_LED[1],0,40,0);
-	pwm.setLED(PWM_LED[2],0,0,40);
-	pwm.setLED(PWM_LED[3],40,0,0);
-	pwm.setLED(PWM_LED[4],0,40,0);
-	pwm.setLED(PWM_LED[5],0,0,40);
+	pwm.setLED(PWM_LED[0],knobBright,0,0);
+	pwm.setLED(PWM_LED[1],0,knobBright,0);
+	pwm.setLED(PWM_LED[2],0,0,knobBright);
+	pwm.setLED(PWM_LED[3],knobBright/100,0,0);
+	pwm.setLED(PWM_LED[4],0,knobBright/100,0);
+	pwm.setLED(PWM_LED[5],0,0,knobBright/100);
 
 	// Write to tubes
 	pwm.writeFaster();
