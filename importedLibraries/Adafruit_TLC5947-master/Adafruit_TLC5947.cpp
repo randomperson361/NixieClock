@@ -88,14 +88,14 @@ void Adafruit_TLC5947::writeFaster() {
   SPI.beginTransaction(TLC5947SPISettings);
   // 24 channels per TLC5974
   for (int16_t c = 24 * numdrivers - 1; c >= 0; c--) {
-	// Even channel number
-	if (c % 2) {
-		SPI.transfer((uint8_t)pwmbuffer[c]);
-	}
 	// Odd channel number
-	else {
+	if (c % 2) {
 		SPI.transfer((uint8_t)(pwmbuffer[c] >> 4));
 		SPI.transfer((uint8_t)((pwmbuffer[c] << 4) | (pwmbuffer[c-1] >> 8)));
+	}
+	// Even channel number
+	else {
+		SPI.transfer((uint8_t)pwmbuffer[c]);
 	}
   }
   digitalWrite(_lat, HIGH);
