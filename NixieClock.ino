@@ -136,16 +136,7 @@ void loop()
 
 	readInputs();
 	//printInputs();
-
-	// RTC testing
-	static int8_t lastSecond = -1;
-
 	rtc.update();
-	if (rtc.second() != lastSecond) // If the second has changed
-	{
-		lastSecond = rtc.second(); // Update lastSecond value
-	}
-
 
 	// Setup digit value
 	switch (loopCounter)
