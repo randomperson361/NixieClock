@@ -45,7 +45,7 @@ void readInputs()
 	buttonStateAdj = !digitalRead(PIN_ADJ_BUTTON);
 	buttonStateDown = !digitalRead(PIN_DOWN_BUTTON);
 	switchAlarmOn = !digitalRead(PIN_ALM_ON_OFF);
-	knobBright = 4*(1023 - analogRead(PIN_BRIGHT_KNOB));
+	knobBright = 4.2*max((1018.0 - analogRead(PIN_BRIGHT_KNOB)),0);
 	uint16_t slider = analogRead(PIN_SET_ALM_TIME);
 	switchSetAlm = 0;
 	switchSetTime = 0;
@@ -183,12 +183,12 @@ void loop()
 	}
 
 	// RGB pattern on LEDs for test
-	pwm.setLED(PWM_LED[0],knobBright,0,0);
-	pwm.setLED(PWM_LED[1],0,knobBright,0);
-	pwm.setLED(PWM_LED[2],0,0,knobBright);
-	pwm.setLED(PWM_LED[3],knobBright/100,0,0);
-	pwm.setLED(PWM_LED[4],0,knobBright/100,0);
-	pwm.setLED(PWM_LED[5],0,0,knobBright/100);
+	pwm.setLED(PWM_LED[0],knobBright/10,0,0);
+	pwm.setLED(PWM_LED[1],0,knobBright/10,0);
+	pwm.setLED(PWM_LED[2],0,0,knobBright/10);
+	pwm.setLED(PWM_LED[3],knobBright/10,0,0);
+	pwm.setLED(PWM_LED[4],0,knobBright/10,0);
+	pwm.setLED(PWM_LED[5],0,0,knobBright/10);
 
 	// Write to tubes
 	pwm.writeFaster();
